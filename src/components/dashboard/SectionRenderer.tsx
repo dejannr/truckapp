@@ -80,13 +80,11 @@ export function SectionRenderer({
     return (
       <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="card lg:col-span-2">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <KpiCard label="Revenue" value={currency(summary.totalRevenue)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.totalRevenue || 0), pctDelta: pctDelta(Number(summary.totalRevenue || 0), Number(cmpSummary.totalRevenue || 0)) } : undefined} />
-              <KpiCard label="Estimated Profit" value={currency(summary.estimatedProfit)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.estimatedProfit || 0), pctDelta: pctDelta(Number(summary.estimatedProfit || 0), Number(cmpSummary.estimatedProfit || 0)) } : undefined} />
-              <KpiCard label="Profit / Mile" value={num(summary.profitPerMile, 3)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.profitPerMile || 0, 3), pctDelta: pctDelta(Number(summary.profitPerMile || 0), Number(cmpSummary.profitPerMile || 0)) } : undefined} />
-              <KpiCard label="Miles Run" value={num(summary.totalLoadedMiles || summary.totalMiles, 0)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0, 0), pctDelta: pctDelta(Number(summary.totalLoadedMiles || summary.totalMiles || 0), Number(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0)) } : undefined} />
-            </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:col-span-2">
+            <KpiCard label="Revenue" value={currency(summary.totalRevenue)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.totalRevenue || 0), pctDelta: pctDelta(Number(summary.totalRevenue || 0), Number(cmpSummary.totalRevenue || 0)) } : undefined} />
+            <KpiCard label="Estimated Profit" value={currency(summary.estimatedProfit)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.estimatedProfit || 0), pctDelta: pctDelta(Number(summary.estimatedProfit || 0), Number(cmpSummary.estimatedProfit || 0)) } : undefined} />
+            <KpiCard label="Profit / Mile" value={num(summary.profitPerMile, 3)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.profitPerMile || 0, 3), pctDelta: pctDelta(Number(summary.profitPerMile || 0), Number(cmpSummary.profitPerMile || 0)) } : undefined} />
+            <KpiCard label="Miles Run" value={num(summary.totalLoadedMiles || summary.totalMiles, 0)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0, 0), pctDelta: pctDelta(Number(summary.totalLoadedMiles || summary.totalMiles || 0), Number(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0)) } : undefined} />
           </div>
           <div className="lg:sticky lg:top-44 lg:self-start">
             <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
@@ -131,15 +129,17 @@ export function SectionRenderer({
       <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         {!rows.length ? <EmptySection /> : null}
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="card lg:col-span-2">
-            <div role="img" aria-label="Estimated profit by truck for selected week and optional compared week">
-              <BarChart
-                categories={(chart.categories || visibleRows.map((r: any) => r.truckId)).slice(0, 8)}
-                series={[
-                  { name: "This Week", data: (chart.values || visibleRows.map((r: any) => Number(r.estimatedProfit || 0))).slice(0, 8) },
-                  ...(isComparisonMode ? [{ name: "Compared Week", data: (chart.categories || visibleRows.map((r: any) => r.truckId)).slice(0, 8).map((id: string) => Number((cmpRowsByTruck.get(id) || {}).estimatedProfit || 0)) }] : []),
-                ]}
-              />
+          <div className="space-y-4 lg:col-span-2">
+            <div className="card">
+              <div role="img" aria-label="Estimated profit by truck for selected week and optional compared week">
+                <BarChart
+                  categories={(chart.categories || visibleRows.map((r: any) => r.truckId)).slice(0, 8)}
+                  series={[
+                    { name: "This Week", data: (chart.values || visibleRows.map((r: any) => Number(r.estimatedProfit || 0))).slice(0, 8) },
+                    ...(isComparisonMode ? [{ name: "Compared Week", data: (chart.categories || visibleRows.map((r: any) => r.truckId)).slice(0, 8).map((id: string) => Number((cmpRowsByTruck.get(id) || {}).estimatedProfit || 0)) }] : []),
+                  ]}
+                />
+              </div>
             </div>
             {renderTable(expanded ? allRows : visibleRows)}
             {allRows.length > 5 ? (
@@ -215,19 +215,19 @@ export function SectionRenderer({
               <div role="img" aria-label="Lane performance heat table for selected week">
                 <HeatmapTable rows={chart.heatRows || visibleRows.map((r: any) => ({ lane: r.lane, score: r.laneProfitPerMile || r.averageProfitPerMile, recommendation: r.recommendation }))} labelKey="lane" scoreKey="score" />
               </div>
-              {renderTable(expanded ? allRows : visibleRows)}
-              {allRows.length > 5 ? (
-                <div className="mt-3">
-                  <button
-                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={() => setExpanded((v) => !v)}
-                    type="button"
-                  >
-                    {expanded ? "Collapse" : "Expand"}
-                  </button>
-                </div>
-              ) : null}
             </div>
+            {renderTable(expanded ? allRows : visibleRows)}
+            {allRows.length > 5 ? (
+              <div className="mt-3">
+                <button
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  onClick={() => setExpanded((v) => !v)}
+                  type="button"
+                >
+                  {expanded ? "Collapse" : "Expand"}
+                </button>
+              </div>
+            ) : null}
           </div>
           <div className="space-y-4 lg:sticky lg:top-44 lg:self-start">
             <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
@@ -275,18 +275,22 @@ export function SectionRenderer({
       <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         {!rows.length ? <EmptySection /> : null}
         <div className="grid gap-4 lg:grid-cols-3">
-          <div className="card lg:col-span-2">
-            <div role="img" aria-label="Driver performance score chart for selected week and optional compared week">
-              <BarChart
-                categories={categories}
-                series={[
-                  { name: "This Week", data: (chart.scoreValues || visibleRows.map((d: any) => Number(d.driverEfficiencyScore || d.driverScore || 0))).slice(0, 8) },
-                  ...(isComparisonMode ? [{ name: "Compared Week", data: categories.slice(0, 8).map((id: string) => Number((cmpRowsByDriver.get(id) || {}).driverEfficiencyScore || (cmpRowsByDriver.get(id) || {}).driverScore || 0)) }] : []),
-                ]}
-              />
+          <div className="space-y-4 lg:col-span-2">
+            <div className="card">
+              <div role="img" aria-label="Driver performance score chart for selected week and optional compared week">
+                <BarChart
+                  categories={categories}
+                  series={[
+                    { name: "This Week", data: (chart.scoreValues || visibleRows.map((d: any) => Number(d.driverEfficiencyScore || d.driverScore || 0))).slice(0, 8) },
+                    ...(isComparisonMode ? [{ name: "Compared Week", data: categories.slice(0, 8).map((id: string) => Number((cmpRowsByDriver.get(id) || {}).driverEfficiencyScore || (cmpRowsByDriver.get(id) || {}).driverScore || 0)) }] : []),
+                  ]}
+                />
+              </div>
             </div>
-            <div role="img" aria-label="Driver profile radar chart">
-              <RadarChart indicators={["Profit/Mile", "Loaded %", "Fuel", "On-time", "Idle"]} values={[68, 74, 62, 70, 61]} name="Driver Profile" />
+            <div className="card">
+              <div role="img" aria-label="Driver profile radar chart">
+                <RadarChart indicators={["Profit/Mile", "Loaded %", "Fuel", "On-time", "Idle"]} values={[68, 74, 62, 70, 61]} name="Driver Profile" />
+              </div>
             </div>
             {renderTable(expanded ? allRows : visibleRows)}
             {allRows.length > 5 ? (
@@ -373,20 +377,18 @@ export function SectionRenderer({
                 />
               </div>
             </div>
-            <div className="card">
-              {renderTable(expanded ? summaryRows : visibleRows)}
-              {summaryRows.length > 5 ? (
-                <div className="mt-3">
-                  <button
-                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={() => setExpanded((v) => !v)}
-                    type="button"
-                  >
-                    {expanded ? "Collapse" : "Expand"}
-                  </button>
-                </div>
-              ) : null}
-            </div>
+            {renderTable(expanded ? summaryRows : visibleRows)}
+            {summaryRows.length > 5 ? (
+              <div className="mt-3">
+                <button
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  onClick={() => setExpanded((v) => !v)}
+                  type="button"
+                >
+                  {expanded ? "Collapse" : "Expand"}
+                </button>
+              </div>
+            ) : null}
             {summary.anomalyFlags?.length ? (
               <div className="card">
                 <p className="mb-2 text-sm font-semibold">Something looks off</p>
