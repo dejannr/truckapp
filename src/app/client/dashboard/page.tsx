@@ -13,7 +13,7 @@ export default async function ClientDashboardWeeksPage() {
 
   return (
     <main>
-      <AppHeader title="Client Dashboard" role="CLIENT" clientName={client?.name} />
+      <AppHeader title="Client Dashboard" role="CLIENT" clientName={client?.name} showClientAction={false} />
       <div className="mx-auto max-w-5xl px-4 pb-8">
         <h2 className="mb-4 text-lg font-semibold">Published Weeks</h2>
         <div className="space-y-2">

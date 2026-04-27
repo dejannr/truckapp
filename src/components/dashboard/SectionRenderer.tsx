@@ -32,18 +32,6 @@ function deltaTextClass(value: number, lowerIsBetter = false) {
   return value > 0 ? "!text-emerald-700 font-semibold" : "!text-red-700 font-semibold";
 }
 
-function DataQualityBlock({ metrics }: { metrics: any }) {
-  const dq = metrics?.dataQuality;
-  if (!dq) return null;
-  return (
-    <div className="card text-xs text-slate-700">
-      <p className="font-semibold">Data quality score: {dq.confidenceScore}/100</p>
-      {dq.estimatedFields?.length ? <p>Estimated fields: {dq.estimatedFields.join(", ")}</p> : null}
-      {dq.missingFiles?.length ? <p>Missing files: {dq.missingFiles.join(", ")}</p> : null}
-    </div>
-  );
-}
-
 function StatusBadge({ status }: { status: string }) {
   const normalized = status.toLowerCase();
   const cls =
@@ -85,12 +73,13 @@ export function SectionRenderer({
   const rows = metrics.rows || section.chartDataJson?.tableRows || [];
   const chart = section.chartDataJson || {};
   const cmpSummary = comparisonSection ? (comparisonSection.metricsJson?.summary || comparisonSection.metricsJson || {}) : {};
+  const qualityScoreRaw = Number(metrics?.dataQuality?.confidenceScore);
+  const qualityScore = Number.isFinite(qualityScoreRaw) ? qualityScoreRaw : undefined;
 
   if (section.sectionKey === "EXECUTIVE_OVERVIEW") {
     return (
-      <DashboardSectionCard title={meta.title} description={meta.description}>
+      <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         <div className="grid gap-4 lg:grid-cols-3">
-          <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
           <div className="card lg:col-span-2">
             <div className="grid gap-3 sm:grid-cols-2">
               <KpiCard label="Revenue" value={currency(summary.totalRevenue)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.totalRevenue || 0), pctDelta: pctDelta(Number(summary.totalRevenue || 0), Number(cmpSummary.totalRevenue || 0)) } : undefined} />
@@ -99,8 +88,10 @@ export function SectionRenderer({
               <KpiCard label="Miles Run" value={num(summary.totalLoadedMiles || summary.totalMiles, 0)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0, 0), pctDelta: pctDelta(Number(summary.totalLoadedMiles || summary.totalMiles || 0), Number(cmpSummary.totalLoadedMiles || cmpSummary.totalMiles || 0)) } : undefined} />
             </div>
           </div>
+          <div className="lg:sticky lg:top-44 lg:self-start">
+            <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
+          </div>
         </div>
-        <DataQualityBlock metrics={metrics} />
       </DashboardSectionCard>
     );
   }
@@ -137,7 +128,7 @@ export function SectionRenderer({
     );
 
     return (
-      <DashboardSectionCard title={meta.title} description={meta.description}>
+      <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         {!rows.length ? <EmptySection /> : null}
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="card lg:col-span-2">
@@ -163,9 +154,8 @@ export function SectionRenderer({
               </div>
             ) : null}
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:sticky lg:top-44 lg:self-start">
             <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
-            <DataQualityBlock metrics={metrics} />
           </div>
         </div>
       </DashboardSectionCard>
@@ -206,7 +196,7 @@ export function SectionRenderer({
     );
 
     return (
-      <DashboardSectionCard title={meta.title} description={meta.description}>
+      <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         {!rows.length ? <EmptySection /> : null}
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="space-y-4 lg:col-span-2">
@@ -239,9 +229,8 @@ export function SectionRenderer({
               ) : null}
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:sticky lg:top-44 lg:self-start">
             <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
-            <DataQualityBlock metrics={metrics} />
           </div>
         </div>
       </DashboardSectionCard>
@@ -283,7 +272,7 @@ export function SectionRenderer({
     );
 
     return (
-      <DashboardSectionCard title={meta.title} description={meta.description}>
+      <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         {!rows.length ? <EmptySection /> : null}
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="card lg:col-span-2">
@@ -312,9 +301,8 @@ export function SectionRenderer({
               </div>
             ) : null}
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 lg:sticky lg:top-44 lg:self-start">
             <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
-            <DataQualityBlock metrics={metrics} />
           </div>
         </div>
       </DashboardSectionCard>
@@ -365,7 +353,7 @@ export function SectionRenderer({
     const cmpMaint = ((comparisonSection?.chartDataJson?.maintenanceBars || []) as any[]);
 
     return (
-      <DashboardSectionCard title={meta.title} description={meta.description}>
+      <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
         <div className="grid gap-4 lg:grid-cols-3">
           <div className="space-y-4 lg:col-span-2">
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -399,10 +387,6 @@ export function SectionRenderer({
                 </div>
               ) : null}
             </div>
-          </div>
-          <div className="space-y-4">
-            <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
-            <DataQualityBlock metrics={metrics} />
             {summary.anomalyFlags?.length ? (
               <div className="card">
                 <p className="mb-2 text-sm font-semibold">Something looks off</p>
@@ -414,13 +398,16 @@ export function SectionRenderer({
               </div>
             ) : null}
           </div>
+          <div className="space-y-4 lg:sticky lg:top-44 lg:self-start">
+            <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
+          </div>
         </div>
       </DashboardSectionCard>
     );
   }
 
   return (
-    <DashboardSectionCard title={meta.title} description={meta.description}>
+    <DashboardSectionCard title={meta.title} description={meta.description} qualityScore={qualityScore}>
       <EmptySection />
     </DashboardSectionCard>
   );

@@ -21,6 +21,8 @@ export function calculateCostTrends(data: NormalizedDataBundle, ctx: CalcContext
 
   const variableCosts = base.fuelCost + base.maintenanceCost;
   const fixedCosts = base.fixedCost;
+  const driverPay = base.totalRevenue * 0.28;
+  const otherFixedCosts = Math.max(0, fixedCosts - driverPay);
   const totalOperatingCost = fixedCosts + variableCosts;
 
   const maintenanceCostPerMile = safeDivide(base.maintenanceCost, base.totalMiles, 0);
@@ -45,12 +47,15 @@ export function calculateCostTrends(data: NormalizedDataBundle, ctx: CalcContext
     metrics: {
       summary: {
         totalOperatingCost: roundCurrency(totalOperatingCost),
+        fuelCost: roundCurrency(base.fuelCost),
+        maintenanceCost: roundCurrency(base.maintenanceCost),
+        driverPay: roundCurrency(driverPay),
         costPerTotalMile: roundNumber(safeDivide(totalOperatingCost, base.totalMiles, 0), 3),
         costPerLoadedMile: roundNumber(safeDivide(totalOperatingCost, base.loadedMiles, 0), 3),
         fuelPctOfRevenue: roundNumber(percent(base.fuelCost, base.totalRevenue), 2),
         maintenanceCostPerMile: roundNumber(maintenanceCostPerMile, 3),
         fuelCostPerMile: roundNumber(fuelCostPerMile, 3),
-        fixedCosts: roundCurrency(fixedCosts),
+        fixedCosts: roundCurrency(otherFixedCosts),
         variableCosts: roundCurrency(variableCosts),
         anomalyFlags: anomalies,
       },
@@ -68,7 +73,8 @@ export function calculateCostTrends(data: NormalizedDataBundle, ctx: CalcContext
       costBreakdown: [
         { name: "Fuel", value: roundCurrency(base.fuelCost) },
         { name: "Maintenance", value: roundCurrency(base.maintenanceCost) },
-        { name: "Fixed", value: roundCurrency(base.fixedCost) },
+        { name: "Driver Pay", value: roundCurrency(driverPay) },
+        { name: "Other", value: roundCurrency(otherFixedCosts) },
       ],
       fuelByTruck: Object.entries(fuelByTruck).map(([truckId, cost]) => ({ truckId, cost: roundCurrency(cost) })),
       maintenanceBars: Object.entries(maintenanceByTruck).map(([truckId, cost]) => ({ truckId, cost: roundCurrency(cost) })),

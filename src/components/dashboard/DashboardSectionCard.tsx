@@ -7,18 +7,31 @@ export function DashboardSectionCard({
   description,
   children,
   details,
+  qualityScore,
 }: {
   title: string;
   description: string;
   children: React.ReactNode;
   details?: React.ReactNode;
+  qualityScore?: number;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const quality =
+    typeof qualityScore === "number"
+      ? qualityScore >= 85
+        ? { label: "Data: High", cls: "border-emerald-200 bg-emerald-50 text-emerald-700" }
+        : qualityScore >= 65
+          ? { label: "Data: Medium", cls: "border-amber-200 bg-amber-50 text-amber-700" }
+          : { label: "Data: Low", cls: "border-red-200 bg-red-50 text-red-700" }
+      : null;
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
       <div className="mb-4">
-        <h3 className="text-xl font-semibold">{title}</h3>
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-xl font-semibold">{title}</h3>
+          {quality ? <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${quality.cls}`}>{quality.label}</span> : null}
+        </div>
         <p className="text-sm text-slate-600">{description}</p>
       </div>
 

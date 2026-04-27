@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ClientDashboardContainer } from "@/components/dashboard/ClientDashboardContainer";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { prisma } from "@/lib/db/prisma";
@@ -29,12 +28,14 @@ export default async function ClientWeekDashboardPage({
 
   return (
     <main>
-      <AppHeader title="Weekly Fleet Report" role="CLIENT" clientName={week.client.name} />
+      <AppHeader
+        title="Weekly Fleet Report"
+        role="CLIENT"
+        clientName={week.client.name}
+        clientActionLabel="Back to weeks"
+        clientActionHref="/client/dashboard"
+      />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-10">
-        <div className="card flex flex-wrap gap-2">
-          <Link href="/client/dashboard" className="text-sm text-accent">← Back to weeks</Link>
-        </div>
-
         <ClientDashboardContainer
           initialWeekId={week.id}
           weekOptions={weeks.map((w) => ({
