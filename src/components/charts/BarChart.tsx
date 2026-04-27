@@ -37,7 +37,7 @@ export function BarChart({
           type: "bar",
           name: s.name,
           data: s.data,
-          itemStyle: { color: s.color || (idx === 0 ? "#146ef5" : "#94a3b8") },
+          itemStyle: { color: s.color || (idx === 0 ? "#146ef5" : "#ea580c") },
         })),
       }}
     />

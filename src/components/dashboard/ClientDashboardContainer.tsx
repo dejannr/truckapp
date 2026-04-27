@@ -108,9 +108,9 @@ export function ClientDashboardContainer({
         </div>
 
         <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
-          {currentWeek ? <span className="rounded bg-slate-100 px-2 py-1">Selected week: {currentWeek.label}</span> : null}
+          {currentWeek ? <span className="rounded bg-blue-100 px-2 py-1 text-blue-800">Selected week: {currentWeek.label}</span> : null}
           {!compareWeek ? <span className="rounded bg-slate-100 px-2 py-1 text-slate-700">{UI_COPY.showingOneWeekOnly}</span> : null}
-          {compareWeek ? <span className="rounded bg-blue-100 px-2 py-1 text-blue-800">{UI_COPY.comparingWith} {compareWeek.label}</span> : null}
+          {compareWeek ? <span className="rounded bg-orange-100 px-2 py-1 text-orange-800">{UI_COPY.comparingWith} {compareWeek.label}</span> : null}
           {compareWeekId ? (
             <Button aria-label="Clear selected comparison week" size="sm" onClick={() => setCompareWeekId("")} type="button">
               {UI_COPY.clearComparison}

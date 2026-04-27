@@ -26,6 +26,12 @@ function pctDelta(current: number, previous: number) {
   return ((current - previous) / previous) * 100;
 }
 
+function deltaTextClass(value: number, lowerIsBetter = false) {
+  if (Math.abs(value) < 0.000001) return "text-slate-600";
+  if (lowerIsBetter) return value < 0 ? "text-emerald-700" : "text-red-700";
+  return value > 0 ? "text-emerald-700" : "text-red-700";
+}
+
 function DataQualityBlock({ metrics }: { metrics: any }) {
   const dq = metrics?.dataQuality;
   if (!dq) return null;
@@ -108,7 +114,7 @@ export function SectionRenderer({
       <div className="table-wrap mt-4">
         <table>
           <caption className="sr-only">Top trucks by estimated profit for selected week</caption>
-          <thead><tr><th scope="col">Truck</th><th scope="col">Revenue</th><th scope="col">Estimated Profit</th>{isComparisonMode ? <th scope="col">Previous Profit</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Truck</th><th scope="col">Revenue</th><th scope="col">Estimated Profit</th>{isComparisonMode ? <th className="text-orange-700" scope="col">Compared Profit</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
           <tbody>
             {tableRows.map((r: any, i: number) => {
               const comparedProfit = Number((cmpRowsByTruck.get(r.truckId) || {}).estimatedProfit || 0);
@@ -119,8 +125,8 @@ export function SectionRenderer({
                   <td>{r.truckId}</td>
                   <td>{currency(r.revenue)}</td>
                   <td>{currency(r.estimatedProfit)}</td>
-                  {isComparisonMode ? <td>{currency(comparedProfit)}</td> : null}
-                  {isComparisonMode ? <td className={delta >= 0 ? "text-emerald-700" : "text-red-700"}>{currency(delta)}</td> : null}
+                  {isComparisonMode ? <td className="text-orange-700">{currency(comparedProfit)}</td> : null}
+                  {isComparisonMode ? <td className={deltaTextClass(delta)}>{currency(delta)}</td> : null}
                   <td><StatusBadge status={status} /></td>
                 </tr>
               );
@@ -175,7 +181,7 @@ export function SectionRenderer({
       <div className="table-wrap mt-4">
         <table>
           <caption className="sr-only">Top lanes for selected week</caption>
-          <thead><tr><th scope="col">Lane</th><th scope="col">Loads</th><th scope="col">Revenue</th><th scope="col">Rate / Mile</th>{isComparisonMode ? <th scope="col">Previous Rate</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Lane</th><th scope="col">Loads</th><th scope="col">Revenue</th><th scope="col">Rate / Mile</th>{isComparisonMode ? <th className="text-orange-700" scope="col">Compared Rate</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
           <tbody>
             {tableRows.map((r: any, i: number) => {
               const rate = Number(r.laneRevenuePerLoadedMile || r.averageRatePerMile || 0);
@@ -188,8 +194,8 @@ export function SectionRenderer({
                   <td>{r.loads ?? "-"}</td>
                   <td>{currency(r.revenue)}</td>
                   <td>{num(rate, 2)}</td>
-                  {isComparisonMode ? <td>{num(prevRate, 2)}</td> : null}
-                  {isComparisonMode ? <td className={change >= 0 ? "text-emerald-700" : "text-red-700"}>{num(change, 2)}</td> : null}
+                  {isComparisonMode ? <td className="text-orange-700">{num(prevRate, 2)}</td> : null}
+                  {isComparisonMode ? <td className={deltaTextClass(change)}>{num(change, 2)}</td> : null}
                   <td><StatusBadge status={status} /></td>
                 </tr>
               );
@@ -252,7 +258,7 @@ export function SectionRenderer({
       <div className="table-wrap mt-4">
         <table>
           <caption className="sr-only">Top drivers for selected week</caption>
-          <thead><tr><th scope="col">Driver</th><th scope="col">Loads</th><th scope="col">Miles</th><th scope="col">Revenue</th>{isComparisonMode ? <th scope="col">Previous Revenue</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Driver</th><th scope="col">Loads</th><th scope="col">Miles</th><th scope="col">Revenue</th>{isComparisonMode ? <th className="text-orange-700" scope="col">Compared Revenue</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
           <tbody>
             {tableRows.map((d: any, i: number) => {
               const current = Number(d.totalRevenue || 0);
@@ -265,8 +271,8 @@ export function SectionRenderer({
                   <td>{d.loadsCompleted ?? "-"}</td>
                   <td>{num(d.totalMiles, 0)}</td>
                   <td>{currency(current)}</td>
-                  {isComparisonMode ? <td>{currency(compared)}</td> : null}
-                  {isComparisonMode ? <td className={delta >= 0 ? "text-emerald-700" : "text-red-700"}>{currency(delta)}</td> : null}
+                  {isComparisonMode ? <td className="text-orange-700">{currency(compared)}</td> : null}
+                  {isComparisonMode ? <td className={deltaTextClass(delta)}>{currency(delta)}</td> : null}
                   <td><StatusBadge status={status} /></td>
                 </tr>
               );
@@ -330,7 +336,7 @@ export function SectionRenderer({
       <div className="table-wrap mt-4">
         <table>
           <caption className="sr-only">Top cost categories for selected week</caption>
-          <thead><tr><th scope="col">Cost</th><th scope="col">Amount</th><th scope="col">Share</th>{isComparisonMode ? <th scope="col">Previous Amount</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Cost</th><th scope="col">Amount</th><th scope="col">Share</th>{isComparisonMode ? <th className="text-orange-700" scope="col">Compared Amount</th> : null}{isComparisonMode ? <th scope="col">Change</th> : null}<th scope="col">Status</th></tr></thead>
           <tbody>
             {tableRows.map((r, i) => {
               const compared = Number((cmpBreakdown.find((x) => x.name === r.category) || {}).value || 0);
@@ -342,8 +348,8 @@ export function SectionRenderer({
                   <td>{r.category}</td>
                   <td>{currency(r.amount)}</td>
                   <td>{num(share, 1)}%</td>
-                  {isComparisonMode ? <td>{currency(compared)}</td> : null}
-                  {isComparisonMode ? <td className={change <= 0 ? "text-emerald-700" : "text-red-700"}>{currency(change)}</td> : null}
+                  {isComparisonMode ? <td className="text-orange-700">{currency(compared)}</td> : null}
+                  {isComparisonMode ? <td className={deltaTextClass(change, true)}>{currency(change)}</td> : null}
                   <td><StatusBadge status={status} /></td>
                 </tr>
               );

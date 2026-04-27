@@ -45,7 +45,7 @@ export function NarrativeCard({
       </div>
 
       {comparisonNarrative ? (
-        <div className="card border-slate-300 bg-slate-50">
+        <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm md:p-5">
           <div className="mb-2 flex items-center justify-between">
             <h3 className="font-semibold">{comparisonNarrative.title}</h3>
             <span className={`rounded px-2 py-1 text-xs font-semibold ${riskClass[comparisonNarrative.riskLevel] || "bg-slate-100"}`}>
