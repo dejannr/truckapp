@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 
 export function UploadFilesForm({ weekId }: { weekId: string }) {
   const router = useRouter();
@@ -34,10 +35,11 @@ export function UploadFilesForm({ weekId }: { weekId: string }) {
       }}
     >
       <label className="block text-sm font-medium">Upload weekly files</label>
+      <p className="text-xs text-slate-600">Supported examples: load exports, fuel reports, maintenance, drivers, and truck files.</p>
       <input className="w-full" multiple onChange={(e) => setFiles(e.target.files)} type="file" />
-      <button className="rounded bg-slate-900 px-3 py-2 text-sm text-white" disabled={loading} type="submit">
-        {loading ? "Uploading..." : "Upload Files"}
-      </button>
+      <Button variant="secondary" disabled={loading} type="submit">
+        {loading ? "Uploading..." : "Upload files"}
+      </Button>
       {message ? <p className="text-sm text-slate-600">{message}</p> : null}
     </form>
   );

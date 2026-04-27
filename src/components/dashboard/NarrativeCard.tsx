@@ -25,9 +25,9 @@ export function NarrativeCard({
 
   return (
     <div className="space-y-3">
-      <div className="card">
+      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm md:p-5">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-semibold">{narrative.title || "AI Narrative"}</h3>
+          <h3 className="font-semibold">{narrative.title || "Weekly Explanation"}</h3>
           <span className={`rounded px-2 py-1 text-xs font-semibold ${riskClass[narrative.riskLevel] || "bg-slate-100"}`}>
             {narrative.riskLevel}
           </span>

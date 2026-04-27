@@ -29,7 +29,7 @@ export default async function ClientWeekDashboardPage({
 
   return (
     <main>
-      <AppHeader title={`Dashboard - ${week.label}`} role="CLIENT" clientName={week.client.name} />
+      <AppHeader title="Weekly Fleet Report" role="CLIENT" clientName={week.client.name} />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-10">
         <div className="card flex flex-wrap gap-2">
           <Link href="/client/dashboard" className="text-sm text-accent">← Back to weeks</Link>

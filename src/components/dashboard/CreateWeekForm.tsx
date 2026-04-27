@@ -26,10 +26,10 @@ export function CreateWeekForm({ clientId }: { clientId: string }) {
       }}
     >
       <label className="text-sm">
-        Week Start
+        Week start date
         <input type="date" className="ml-2 rounded border px-3 py-2" value={weekStart} onChange={(e) => setWeekStart(e.target.value)} required />
       </label>
-      <button className="rounded bg-accent px-3 py-2 text-white" type="submit">Create Week</button>
+      <button className="rounded bg-accent px-3 py-2 text-white" type="submit">Create report week</button>
       {error ? <p className="text-sm text-bad">{error}</p> : null}
     </form>
   );

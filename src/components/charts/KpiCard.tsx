@@ -18,12 +18,10 @@ function deltaIcon(value?: number) {
 export function KpiCard({
   label,
   value,
-  hint,
   compare,
 }: {
   label: string;
   value: string;
-  hint?: string;
   compare?: CompareValue;
 }) {
   return (
@@ -40,7 +38,6 @@ export function KpiCard({
           {deltaIcon(compare.pctDelta)} {compare.pctDelta > 0 ? "+" : ""}{compare.pctDelta.toFixed(2)}%
         </p>
       ) : null}
-      {hint ? <p className="mt-1 text-xs text-slate-500">{hint}</p> : null}
     </div>
   );
 }

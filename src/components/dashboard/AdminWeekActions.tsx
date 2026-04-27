@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 
 export function AdminWeekActions({ weekId }: { weekId: string }) {
   const router = useRouter();
@@ -28,10 +29,11 @@ export function AdminWeekActions({ weekId }: { weekId: string }) {
 
   return (
     <div className="card space-y-3">
+      <p className="text-sm text-slate-600">Run steps in order: process data, generate weekly explanation, then publish report.</p>
       <div className="flex flex-wrap gap-2">
-        <button className="rounded bg-accent px-3 py-2 text-sm text-white" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/process`, "Process Data")} type="button">Process Data</button>
-        <button className="rounded bg-slate-700 px-3 py-2 text-sm text-white" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/generate-narratives`, "Generate Narratives")} type="button">Generate Narratives</button>
-        <button className="rounded bg-green-700 px-3 py-2 text-sm text-white" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/publish`, "Publish")} type="button">Publish</button>
+        <Button disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/process`, "Process report data")} type="button">Process report data</Button>
+        <Button variant="secondary" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/generate-narratives`, "Generate weekly explanation")} type="button">Generate weekly explanation</Button>
+        <Button variant="primary" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/publish`, "Publish report")} type="button">Publish report</Button>
       </div>
       {busy ? <p className="text-sm text-slate-500">Running: {busy}</p> : null}
       {message ? <p className="text-sm text-slate-700">{message}</p> : null}

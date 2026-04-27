@@ -29,15 +29,13 @@ export function DashboardView({
   return (
     <div className="space-y-8">
       {orderedSections.map((section) => (
-        <div key={section.sectionKey}>
-          <h2 className="mb-3 text-xl font-semibold">{section.title}</h2>
-          <SectionRenderer
-            section={section}
-            comparisonSection={compareMap.get(section.sectionKey)}
-            comparisonMetrics={comparisonBySection?.[section.sectionKey]}
-            isComparisonMode={isComparisonMode}
-          />
-        </div>
+        <SectionRenderer
+          key={section.sectionKey}
+          section={section}
+          comparisonSection={compareMap.get(section.sectionKey)}
+          comparisonMetrics={comparisonBySection?.[section.sectionKey]}
+          isComparisonMode={isComparisonMode}
+        />
       ))}
     </div>
   );
