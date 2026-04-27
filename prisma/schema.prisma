@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  clientId     String?
+  client       Client?  @relation(fields: [clientId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  CLIENT
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  contactName String?
+  email       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users   User[]
+  weeks   ReportingWeek[]
+  uploads UploadedFile[]
+  assumptions ClientAssumption?
+}
+
+model ClientAssumption {
+  id                        String   @id @default(cuid())
+  clientId                  String   @unique
+  client                    Client   @relation(fields: [clientId], references: [id])
+  defaultMpg                Float    @default(6.5)
+  defaultFuelPrice          Float    @default(3.8)
+  defaultMaintenancePerMile Float    @default(0.12)
+  defaultFixedCostPerTruck  Float    @default(900)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
+model ReportingWeek {
+  id          String     @id @default(cuid())
+  clientId    String
+  client      Client     @relation(fields: [clientId], references: [id])
+  weekStart   DateTime
+  weekEnd     DateTime
+  label       String
+  status      WeekStatus @default(DRAFT)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  uploadedFiles UploadedFile[]
+  sections      DashboardSection[]
+
+  @@unique([clientId, weekStart])
+}
+
+enum WeekStatus {
+  DRAFT
+  FILES_UPLOADED
+  PROCESSED
+  NARRATIVES_GENERATED
+  PUBLISHED
+}
+
+model UploadedFile {
+  id                       String           @id @default(cuid())
+  clientId                 String
+  client                   Client           @relation(fields: [clientId], references: [id])
+  reportingWeekId          String
+  reportingWeek            ReportingWeek    @relation(fields: [reportingWeekId], references: [id])
+  originalName             String
+  storedPath               String
+  mimeType                 String?
+  fileType                 UploadedFileType @default(UNKNOWN)
+  classificationConfidence Float?
+  createdAt                DateTime         @default(now())
+}
+
+enum UploadedFileType {
+  LOADS
+  FUEL
+  MAINTENANCE
+  DRIVERS
+  TRUCKS
+  SETTLEMENTS
+  UNKNOWN
+}
+
+model DashboardSection {
+  id              String              @id @default(cuid())
+  reportingWeekId String
+  reportingWeek   ReportingWeek       @relation(fields: [reportingWeekId], references: [id])
+  sectionKey      DashboardSectionKey
+  title           String
+  metricsJson     Json
+  chartDataJson   Json
+  narrativeJson   Json?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@unique([reportingWeekId, sectionKey])
+}
+
+enum DashboardSectionKey {
+  EXECUTIVE_OVERVIEW
+  TRUCK_PROFITABILITY
+  LANE_PERFORMANCE
+  DRIVER_PERFORMANCE
+  COST_TRENDS
+}
