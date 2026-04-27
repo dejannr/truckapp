@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 
+const dashboardActionClass = "inline-flex h-9 items-center rounded-lg px-3 text-sm text-slate-800 transition hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2";
+
 export function AppHeader({
   title,
   role,
@@ -20,8 +22,19 @@ export function AppHeader({
         </div>
         <div className="flex items-center gap-3">
           {role === "ADMIN" ? <Link href="/admin/clients" className="text-sm text-accent">Clients</Link> : null}
-          {role === "CLIENT" ? <Link href="/client/dashboard" className="text-sm text-accent">Dashboard</Link> : null}
-          <LogoutButton />
+          {role === "CLIENT" ? (
+            <div className="flex items-center gap-1.5">
+              <Link
+                href="/client/dashboard"
+                className={dashboardActionClass}
+              >
+                Dashboard
+              </Link>
+              <LogoutButton />
+            </div>
+          ) : (
+            <LogoutButton />
+          )}
         </div>
       </div>
     </header>

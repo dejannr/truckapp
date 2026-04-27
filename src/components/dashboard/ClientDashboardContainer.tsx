@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DashboardView } from "@/components/dashboard/DashboardView";
 import { UI_COPY } from "@/lib/labels";
-import { Button } from "@/components/ui/Button";
 
 type WeekOption = {
   id: string;
@@ -66,7 +65,7 @@ export function ClientDashboardContainer({
             Selected week
             <select
               aria-label="Select reporting week"
-              className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               value={selectedWeekId}
               onChange={(e) => {
                 const next = e.target.value;
@@ -85,7 +84,7 @@ export function ClientDashboardContainer({
             Compare with
             <select
               aria-label="Compare with another reporting week"
-              className="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               value={compareWeekId}
               onChange={(e) => {
                 const next = e.target.value;
@@ -107,14 +106,19 @@ export function ClientDashboardContainer({
           </label>
         </div>
 
-        <div className="mt-1 flex flex-wrap items-center gap-3 text-sm">
-          {currentWeek ? <span className="rounded bg-blue-100 px-2 py-1 text-blue-800">Selected week: {currentWeek.label}</span> : null}
-          {!compareWeek ? <span className="rounded bg-slate-100 px-2 py-1 text-slate-700">{UI_COPY.showingOneWeekOnly}</span> : null}
-          {compareWeek ? <span className="rounded bg-orange-100 px-2 py-1 text-orange-800">{UI_COPY.comparingWith} {compareWeek.label}</span> : null}
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+          {currentWeek ? <span className="inline-flex h-9 items-center rounded-lg bg-blue-100 px-3 text-blue-800">Selected week: {currentWeek.label}</span> : null}
+          {!compareWeek ? <span className="inline-flex h-9 items-center rounded-lg bg-slate-100 px-3 text-slate-700">{UI_COPY.showingOneWeekOnly}</span> : null}
+          {compareWeek ? <span className="inline-flex h-9 items-center rounded-lg bg-orange-100 px-3 text-orange-800">{UI_COPY.comparingWith} {compareWeek.label}</span> : null}
           {compareWeekId ? (
-            <Button aria-label="Clear selected comparison week" size="sm" onClick={() => setCompareWeekId("")} type="button">
+            <button
+              aria-label="Clear selected comparison week"
+              className="h-9 rounded-lg bg-slate-800 px-3 text-sm text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
+              onClick={() => setCompareWeekId("")}
+              type="button"
+            >
               {UI_COPY.clearComparison}
-            </Button>
+            </button>
           ) : null}
         </div>
         {validationError ? <p className="text-sm text-amber-700" id="compare-error" role="alert">{validationError}</p> : null}

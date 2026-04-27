@@ -27,9 +27,9 @@ function pctDelta(current: number, previous: number) {
 }
 
 function deltaTextClass(value: number, lowerIsBetter = false) {
-  if (Math.abs(value) < 0.000001) return "text-slate-600";
-  if (lowerIsBetter) return value < 0 ? "text-emerald-700" : "text-red-700";
-  return value > 0 ? "text-emerald-700" : "text-red-700";
+  if (Math.abs(value) < 0.000001) return "!text-slate-600 font-semibold";
+  if (lowerIsBetter) return value < 0 ? "!text-emerald-700 font-semibold" : "!text-red-700 font-semibold";
+  return value > 0 ? "!text-emerald-700 font-semibold" : "!text-red-700 font-semibold";
 }
 
 function DataQualityBlock({ metrics }: { metrics: any }) {
@@ -92,7 +92,7 @@ export function SectionRenderer({
         <div className="grid gap-4 lg:grid-cols-3">
           <NarrativeCard narrative={section.narrativeJson} comparisonNarrative={comparisonSection?.narrativeJson as any} />
           <div className="card lg:col-span-2">
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-3 sm:grid-cols-2">
               <KpiCard label="Revenue" value={currency(summary.totalRevenue)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.totalRevenue || 0), pctDelta: pctDelta(Number(summary.totalRevenue || 0), Number(cmpSummary.totalRevenue || 0)) } : undefined} />
               <KpiCard label="Estimated Profit" value={currency(summary.estimatedProfit)} compare={isComparisonMode ? { comparedValue: currency(cmpSummary.estimatedProfit || 0), pctDelta: pctDelta(Number(summary.estimatedProfit || 0), Number(cmpSummary.estimatedProfit || 0)) } : undefined} />
               <KpiCard label="Profit / Mile" value={num(summary.profitPerMile, 3)} compare={isComparisonMode ? { comparedValue: num(cmpSummary.profitPerMile || 0, 3), pctDelta: pctDelta(Number(summary.profitPerMile || 0), Number(cmpSummary.profitPerMile || 0)) } : undefined} />
