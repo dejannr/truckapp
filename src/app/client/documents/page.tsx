@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { DocumentsTable } from "@/components/documents/DocumentsTable";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { getWorkspaceContext, getWorkspaceNavItems, workspaceQuery } from "@/lib/workspace";
@@ -40,12 +39,6 @@ export default async function ClientDocumentsPage({ searchParams }: { searchPara
     <main>
       <AppHeader title="Document List" role={isAdmin ? "ADMIN" : "CLIENT"} clientName={client.name} navItems={getWorkspaceNavItems(isAdmin ? "ADMIN" : "CLIENT", clientId)} />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-8">
-        <div className="card flex flex-wrap items-center justify-end gap-3">
-          <Link href={`/client/upload${query}`} className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white">
-            Upload documents
-          </Link>
-        </div>
-
         <DocumentsTable
           updateUrlBase="/api/documents"
           documents={documents.map((document) => ({
