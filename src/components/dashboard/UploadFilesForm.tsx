@@ -4,7 +4,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 
-export function UploadFilesForm({ weekId }: { weekId: string }) {
+export function UploadFilesForm({
+  uploadUrl,
+  title,
+  description,
+  clientId,
+  buttonLabel = "Upload files",
+}: {
+  uploadUrl: string;
+  title: string;
+  description: string;
+  clientId?: string;
+  buttonLabel?: string;
+}) {
   const router = useRouter();
   const [files, setFiles] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,8 +31,11 @@ export function UploadFilesForm({ weekId }: { weekId: string }) {
         setLoading(true);
         setMessage(null);
         const form = new FormData();
+        if (clientId) {
+          form.append("clientId", clientId);
+        }
         Array.from(files).forEach((file) => form.append("files", file));
-        const res = await fetch(`/api/admin/weeks/${weekId}/upload`, {
+        const res = await fetch(uploadUrl, {
           method: "POST",
           body: form,
         });
@@ -34,11 +49,11 @@ export function UploadFilesForm({ weekId }: { weekId: string }) {
         router.refresh();
       }}
     >
-      <label className="block text-sm font-medium">Upload weekly files</label>
-      <p className="text-xs text-slate-600">Supported examples: load exports, fuel reports, maintenance, drivers, and truck files.</p>
+      <label className="block text-sm font-medium">{title}</label>
+      <p className="text-xs text-slate-600">{description}</p>
       <input className="w-full" multiple onChange={(e) => setFiles(e.target.files)} type="file" />
       <Button variant="secondary" disabled={loading} type="submit">
-        {loading ? "Uploading..." : "Upload files"}
+        {loading ? "Uploading..." : buttonLabel}
       </Button>
       {message ? <p className="text-sm text-slate-600">{message}</p> : null}
     </form>

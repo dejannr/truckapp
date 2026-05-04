@@ -29,7 +29,6 @@ export function AdminWeekActions({ weekId }: { weekId: string }) {
 
   return (
     <div className="card space-y-3">
-      <p className="text-sm text-slate-600">Run steps in order: process data, generate weekly explanation, then publish report.</p>
       <div className="flex flex-wrap gap-2">
         <Button disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/process`, "Process report data")} type="button">Process report data</Button>
         <Button variant="secondary" disabled={!!busy} onClick={() => run(`/api/admin/weeks/${weekId}/generate-narratives`, "Generate weekly explanation")} type="button">Generate weekly explanation</Button>

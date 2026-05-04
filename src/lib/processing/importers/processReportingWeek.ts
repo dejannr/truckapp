@@ -25,6 +25,7 @@ export async function processReportingWeek(weekId: string): Promise<ImportResult
       data: {
         fileType: file.fileType,
         classificationConfidence: file.confidence,
+        processed: true,
       },
     });
   }

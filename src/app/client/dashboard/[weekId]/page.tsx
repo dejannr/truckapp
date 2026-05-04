@@ -32,8 +32,8 @@ export default async function ClientWeekDashboardPage({
         title="Weekly Fleet Report"
         role="CLIENT"
         clientName={week.client.name}
-        clientActionLabel="Back to weeks"
-        clientActionHref="/client/dashboard"
+        clientActionLabel="Workspace"
+        clientActionHref="/client"
       />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-10">
         <ClientDashboardContainer

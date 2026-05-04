@@ -129,6 +129,7 @@ async function writeWeekFiles(clientId: string, weekId: string, weekStart: Date,
         mimeType: file.mime,
         fileType: file.type,
         classificationConfidence: file.confidence,
+        processed: true,
       },
     });
   }

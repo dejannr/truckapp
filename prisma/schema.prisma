@@ -79,13 +79,14 @@ model UploadedFile {
   id                       String           @id @default(cuid())
   clientId                 String
   client                   Client           @relation(fields: [clientId], references: [id])
-  reportingWeekId          String
-  reportingWeek            ReportingWeek    @relation(fields: [reportingWeekId], references: [id])
+  reportingWeekId          String?
+  reportingWeek            ReportingWeek?   @relation(fields: [reportingWeekId], references: [id], onDelete: SetNull)
   originalName             String
   storedPath               String
   mimeType                 String?
   fileType                 UploadedFileType @default(UNKNOWN)
   classificationConfidence Float?
+  processed                Boolean          @default(false)
   createdAt                DateTime         @default(now())
 }
 
