@@ -22,6 +22,13 @@ export default async function ClientUploadPage({ searchParams }: { searchParams?
         <UploadFilesForm
           uploadUrl="/api/documents/upload"
           clientId={isAdmin ? clientId : undefined}
+          weekOptions={client.weeks.map((week) => ({
+            id: week.id,
+            label: week.label,
+            weekStart: week.weekStart.toISOString(),
+            weekEnd: week.weekEnd.toISOString(),
+            status: week.status,
+          }))}
           title="Upload files"
           description="Supported examples: load exports, fuel reports, maintenance, drivers, and truck files."
           buttonLabel="Upload documents"
