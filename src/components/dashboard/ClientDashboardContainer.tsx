@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { DashboardView } from "@/components/dashboard/DashboardView";
 import { UI_COPY } from "@/lib/labels";
 
@@ -20,6 +21,7 @@ export function ClientDashboardContainer({
   weekOptions: WeekOption[];
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedWeekId, setSelectedWeekId] = useState(initialWeekId);
   const [compareWeekId, setCompareWeekId] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -28,15 +30,17 @@ export function ClientDashboardContainer({
   const [payload, setPayload] = useState<any>(null);
 
   const isComparisonMode = Boolean(compareWeekId);
+  const clientId = searchParams.get("clientId");
 
   useEffect(() => {
     let cancelled = false;
     async function run() {
       setLoading(true);
       setError(null);
+      const clientQuery = clientId ? `&clientId=${encodeURIComponent(clientId)}` : "";
       const endpoint = !compareWeekId
-        ? `/api/client/dashboard?weekId=${selectedWeekId}`
-        : `/api/client/dashboard/compare?weekId=${selectedWeekId}&compareWeekId=${compareWeekId}`;
+        ? `/api/client/dashboard?weekId=${selectedWeekId}${clientQuery}`
+        : `/api/client/dashboard/compare?weekId=${selectedWeekId}&compareWeekId=${compareWeekId}${clientQuery}`;
 
       const res = await fetch(endpoint);
       const json = await res.json().catch(() => ({}));
@@ -52,7 +56,7 @@ export function ClientDashboardContainer({
     return () => {
       cancelled = true;
     };
-  }, [selectedWeekId, compareWeekId]);
+  }, [selectedWeekId, compareWeekId, clientId]);
 
   const currentWeek = useMemo(() => weekOptions.find((w) => w.id === selectedWeekId), [weekOptions, selectedWeekId]);
   const compareWeek = useMemo(() => weekOptions.find((w) => w.id === compareWeekId), [weekOptions, compareWeekId]);
@@ -71,7 +75,7 @@ export function ClientDashboardContainer({
                 const next = e.target.value;
                 setSelectedWeekId(next);
                 setCompareWeekId("");
-                router.push(`/client/dashboard/${next}`);
+                router.push(clientId ? `/client/dashboard/${next}?clientId=${encodeURIComponent(clientId)}` : `/client/dashboard/${next}`);
               }}
             >
               {weekOptions.map((w) => (

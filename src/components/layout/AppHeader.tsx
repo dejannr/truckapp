@@ -1,40 +1,83 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/layout/LogoutButton";
 
-const dashboardActionClass = "inline-flex h-9 items-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2";
-const clientsActionClass = "inline-flex h-9 items-center rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-800 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2";
+type NavItem = {
+  href: string;
+  label: string;
+};
 
 export function AppHeader({
   title,
   role,
   clientName,
-  clientActionLabel = "Dashboard",
-  clientActionHref = "/client/dashboard",
-  showClientAction = true,
+  navItems,
 }: {
   title: string;
   role: "ADMIN" | "CLIENT";
   clientName?: string;
-  clientActionLabel?: string;
-  clientActionHref?: string;
-  showClientAction?: boolean;
+  navItems?: NavItem[];
 }) {
+  const pathname = usePathname();
+  const items = navItems ?? (role === "ADMIN"
+    ? [{ href: "/admin/clients", label: "Clients" }]
+    : [
+        { href: "/client", label: "Workspace" },
+        { href: "/client/upload", label: "Upload" },
+        { href: "/client/documents", label: "Documents" },
+        { href: "/client/dashboard", label: "Dashboards" },
+      ]);
+
+  function isActive(href: string) {
+    if (href.includes("#")) {
+      return false;
+    }
+    const baseHref = href.split("#")[0].split("?")[0];
+    if (baseHref === "/client/dashboard") {
+      return pathname === "/client/dashboard" || pathname.startsWith("/client/dashboard/");
+    }
+    return pathname === baseHref;
+  }
+
   return (
-    <header className="mb-6 border-b border-slate-200 bg-gradient-to-b from-white to-slate-50/70">
-      <div className="mx-auto max-w-7xl px-4 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-slate-500">Trucking Analytics</p>
-            <h1 className="text-lg font-semibold text-slate-900">{title}</h1>
-            {clientName ? <p className="text-sm text-slate-600">{clientName}</p> : null}
+    <header className="sticky top-0 z-20 mb-6 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-14 items-center gap-4">
+          <Link
+            href={role === "ADMIN" ? "/admin/clients" : "/client"}
+            className="flex-shrink-0 text-lg font-semibold tracking-tight text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+          >
+            TruckA
+          </Link>
+
+          <div className="min-w-0 flex-1">
+            <nav aria-label="Primary" className="flex items-center justify-center gap-1 overflow-x-auto">
+              {items.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                      active ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
-          <div className="flex items-center gap-2">
-            {role === "ADMIN" ? <Link href="/admin/clients" className={clientsActionClass}>Clients</Link> : null}
-            {role === "CLIENT" && showClientAction ? <Link href={clientActionHref} className={dashboardActionClass}>{clientActionLabel}</Link> : null}
+
+          <div className="flex-shrink-0">
             <LogoutButton />
           </div>
         </div>
       </div>
+      <span className="sr-only">{title}{clientName ? ` ${clientName}` : ""}</span>
     </header>
   );
 }

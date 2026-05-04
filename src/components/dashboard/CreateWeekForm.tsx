@@ -8,6 +8,7 @@ export function CreateWeekForm({ clientId }: { clientId: string }) {
 
   return (
     <form
+      id="create-week"
       className="card mt-4 flex flex-wrap items-end gap-3"
       onSubmit={async (e) => {
         e.preventDefault();

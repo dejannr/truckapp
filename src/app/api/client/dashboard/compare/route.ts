@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
-import { requireApiRole } from "@/lib/auth/guards";
+import { requireApiAuth } from "@/lib/auth/guards";
 import { compareDashboardSections } from "@/lib/processing/comparison/compareDashboardSections";
 import { generateComparisonNarratives } from "@/lib/processing/narratives/generateComparisonNarratives";
 
 export async function GET(request: Request) {
-  const auth = await requireApiRole("CLIENT");
+  const auth = await requireApiAuth();
   if ("error" in auth) return auth.error;
 
   const url = new URL(request.url);
   const weekId = url.searchParams.get("weekId");
   const compareWeekId = url.searchParams.get("compareWeekId");
+  const clientId = url.searchParams.get("clientId");
 
   if (!weekId || !compareWeekId) {
     return NextResponse.json({ error: "weekId and compareWeekId are required" }, { status: 400 });
@@ -24,11 +25,13 @@ export async function GET(request: Request) {
     prisma.reportingWeek.findUnique({ where: { id: compareWeekId }, include: { client: true, sections: true } }),
   ]);
 
+  const allowedClientId = auth.user.role === "ADMIN" ? clientId : auth.user.clientId;
   if (
+    !allowedClientId ||
     !selectedWeek ||
     !compareWeek ||
-    selectedWeek.clientId !== auth.user.clientId ||
-    compareWeek.clientId !== auth.user.clientId
+    selectedWeek.clientId !== allowedClientId ||
+    compareWeek.clientId !== allowedClientId
   ) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

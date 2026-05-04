@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { DocumentsTable } from "@/components/documents/DocumentsTable";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { requirePageRole } from "@/lib/auth/server";
+import { getWorkspaceContext, getWorkspaceNavItems, workspaceQuery } from "@/lib/workspace";
 import { prisma } from "@/lib/db/prisma";
 
-export default async function ClientDocumentsPage() {
-  const user = await requirePageRole("CLIENT");
-  const clientId = user.clientId || "";
+export default async function ClientDocumentsPage({ searchParams }: { searchParams?: Promise<{ clientId?: string }> }) {
+  const { client, clientId, isAdmin } = await getWorkspaceContext(searchParams);
+  const query = workspaceQuery(clientId, isAdmin ? "ADMIN" : "CLIENT");
 
-  const [client, documents, weeks] = await Promise.all([
-    prisma.client.findUnique({ where: { id: clientId } }),
+  const [documents, weeks] = await Promise.all([
     prisma.uploadedFile.findMany({
       where: { clientId },
       orderBy: { createdAt: "desc" },
@@ -39,13 +38,10 @@ export default async function ClientDocumentsPage() {
 
   return (
     <main>
-      <AppHeader title="Document List" role="CLIENT" clientName={client?.name} clientActionLabel="Workspace" clientActionHref="/client" />
+      <AppHeader title="Document List" role={isAdmin ? "ADMIN" : "CLIENT"} clientName={client.name} navItems={getWorkspaceNavItems(isAdmin ? "ADMIN" : "CLIENT", clientId)} />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-8">
-        <div className="card flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm text-slate-600">Review all uploaded documents and assign each one to a week.</p>
-          </div>
-          <Link href="/client/upload" className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white">
+        <div className="card flex flex-wrap items-center justify-end gap-3">
+          <Link href={`/client/upload${query}`} className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white">
             Upload documents
           </Link>
         </div>

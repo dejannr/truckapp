@@ -1,39 +1,42 @@
+import { redirect } from "next/navigation";
 import { ClientDashboardContainer } from "@/components/dashboard/ClientDashboardContainer";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { getPageUser } from "@/lib/auth/server";
+import { getWorkspaceNavItems } from "@/lib/workspace";
 import { prisma } from "@/lib/db/prisma";
-import { requirePageRole } from "@/lib/auth/server";
 
 export default async function ClientWeekDashboardPage({
   params,
 }: {
   params: Promise<{ weekId: string }>;
 }) {
-  const user = await requirePageRole("CLIENT");
+  const user = await getPageUser();
+  if (!user) redirect("/login");
+
   const { weekId } = await params;
 
-  const [week, weeks] = await Promise.all([
-    prisma.reportingWeek.findUnique({
-      where: { id: weekId },
-      include: {
-        client: true,
-      }
-    }),
-    prisma.reportingWeek.findMany({
-      where: { clientId: user.clientId || "", status: "PUBLISHED" },
-      orderBy: { weekStart: "desc" },
-    })
-  ]);
+  const week = await prisma.reportingWeek.findUnique({
+    where: { id: weekId },
+    include: {
+      client: true,
+    },
+  });
 
-  if (!week || week.clientId !== user.clientId) return <main className="p-6">Forbidden</main>;
+  if (!week) return <main className="p-6">Week not found</main>;
+  if (user.role === "CLIENT" && week.clientId !== user.clientId) return <main className="p-6">Forbidden</main>;
+
+  const weeks = await prisma.reportingWeek.findMany({
+    where: { clientId: week.clientId, status: "PUBLISHED" },
+    orderBy: { weekStart: "desc" },
+  });
 
   return (
     <main>
       <AppHeader
         title="Weekly Fleet Report"
-        role="CLIENT"
+        role={user.role}
         clientName={week.client.name}
-        clientActionLabel="Workspace"
-        clientActionHref="/client"
+        navItems={getWorkspaceNavItems(user.role, week.clientId)}
       />
       <div className="mx-auto max-w-7xl space-y-4 px-4 pb-10">
         <ClientDashboardContainer
