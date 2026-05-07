@@ -84,10 +84,27 @@ model UploadedFile {
   originalName             String
   storedPath               String
   mimeType                 String?
+  content                  String?
+  processingStatus         ProcessingStatus  @default(unprocessed)
+  processingError          String?
+  processedAt              DateTime?
+  contentType              ContentType?
   fileType                 UploadedFileType @default(UNKNOWN)
   classificationConfidence Float?
   processed                Boolean          @default(false)
   createdAt                DateTime         @default(now())
+}
+
+enum ProcessingStatus {
+  unprocessed
+  processing
+  processed
+  failed
+}
+
+enum ContentType {
+  plain_text
+  markdown
 }
 
 enum UploadedFileType {

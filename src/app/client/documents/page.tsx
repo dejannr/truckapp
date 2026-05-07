@@ -1,17 +1,25 @@
 import { DocumentsTable } from "@/components/documents/DocumentsTable";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { getWorkspaceContext, getWorkspaceNavItems, workspaceQuery } from "@/lib/workspace";
+import { getWorkspaceContext, getWorkspaceNavItems } from "@/lib/workspace";
 import { prisma } from "@/lib/db/prisma";
 
 export default async function ClientDocumentsPage({ searchParams }: { searchParams?: Promise<{ clientId?: string }> }) {
   const { client, clientId, isAdmin } = await getWorkspaceContext(searchParams);
-  const query = workspaceQuery(clientId, isAdmin ? "ADMIN" : "CLIENT");
 
   const [documents, weeks] = await Promise.all([
     prisma.uploadedFile.findMany({
       where: { clientId },
       orderBy: { createdAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        originalName: true,
+        createdAt: true,
+        reportingWeekId: true,
+        content: true,
+        processingStatus: true,
+        processingError: true,
+        processedAt: true,
+        contentType: true,
         reportingWeek: {
           select: {
             id: true,
@@ -44,9 +52,16 @@ export default async function ClientDocumentsPage({ searchParams }: { searchPara
           documents={documents.map((document) => ({
             id: document.id,
             originalName: document.originalName,
-            processed: document.processed,
             createdAt: document.createdAt.toISOString(),
             reportingWeekId: document.reportingWeekId,
+            needsProcessing:
+              !document.content?.trim() ||
+              document.processingStatus === "unprocessed" ||
+              document.processingStatus === "failed",
+            processingStatus: document.processingStatus,
+            processingError: document.processingError,
+            processedAt: document.processedAt ? document.processedAt.toISOString() : null,
+            contentType: document.contentType,
             reportingWeek: document.reportingWeek
               ? {
                   id: document.reportingWeek.id,
