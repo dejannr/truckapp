@@ -33,6 +33,8 @@ export function DashboardView({
           key={section.sectionKey}
           section={section}
           comparisonSection={compareMap.get(section.sectionKey)}
+          allSections={sections}
+          allCompareSections={compareSections || []}
           comparisonMetrics={comparisonBySection?.[section.sectionKey]}
           isComparisonMode={isComparisonMode}
         />

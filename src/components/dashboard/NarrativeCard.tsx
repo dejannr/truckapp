@@ -9,6 +9,7 @@ const riskClass: Record<string, string> = {
 export function NarrativeCard({
   narrative,
   comparisonNarrative,
+  titleOverride,
 }: {
   narrative: Narrative | null;
   comparisonNarrative?: {
@@ -18,6 +19,7 @@ export function NarrativeCard({
     actionItems: string[];
     riskLevel: "LOW" | "MEDIUM" | "HIGH";
   } | null;
+  titleOverride?: string;
 }) {
   if (!narrative) {
     return <div className="card text-sm text-slate-600">Narrative not generated yet.</div>;
@@ -27,7 +29,7 @@ export function NarrativeCard({
     <div className="space-y-3">
       <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm md:p-5">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-semibold">{narrative.title || "Weekly Explanation"}</h3>
+          <h3 className="font-semibold">{titleOverride || narrative.title || "Weekly Explanation"}</h3>
           <span className={`rounded px-2 py-1 text-xs font-semibold ${riskClass[narrative.riskLevel] || "bg-slate-100"}`}>
             {narrative.riskLevel}
           </span>
@@ -47,7 +49,7 @@ export function NarrativeCard({
       {comparisonNarrative ? (
         <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm md:p-5">
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-semibold">{comparisonNarrative.title}</h3>
+            <h3 className="font-semibold">{titleOverride || comparisonNarrative.title}</h3>
             <span className={`rounded px-2 py-1 text-xs font-semibold ${riskClass[comparisonNarrative.riskLevel] || "bg-slate-100"}`}>
               {comparisonNarrative.riskLevel}
             </span>

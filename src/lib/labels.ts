@@ -1,23 +1,23 @@
 export const SECTION_LABELS: Record<string, { title: string; description: string }> = {
   EXECUTIVE_OVERVIEW: {
-    title: "Weekly Summary",
-    description: "The most important numbers and issues from this week.",
+    title: "Executive Overview",
+    description: "How the business performed overall, what improved, and what declined.",
   },
   TRUCK_PROFITABILITY: {
-    title: "Truck Profitability",
-    description: "See which trucks made money and which need attention.",
+    title: "Financial Performance",
+    description: "Deep financial analysis of where money was earned and spent.",
   },
   LANE_PERFORMANCE: {
-    title: "Lane Performance",
-    description: "See which lanes are worth keeping, renegotiating, or avoiding.",
+    title: "Fleet & Driver Performance",
+    description: "Operational efficiency by truck and driver, with comparison impact.",
   },
   DRIVER_PERFORMANCE: {
-    title: "Driver Performance",
-    description: "See driver activity and performance for the week.",
+    title: "Load & Lane Performance",
+    description: "Freight quality and lane-level profitability changes.",
   },
   COST_TRENDS: {
-    title: "Costs & Trends",
-    description: "See where money was spent this week.",
+    title: "Operational Costs & Efficiency",
+    description: "Fuel, maintenance, idle time, and operational waste signals.",
   },
 };
 
